@@ -10,7 +10,7 @@ def index():
     return render_template('index.html')
 
 
-@app.route("/getCurrentHeatmapPoints", methods=['POST'])
+@app.route("/getNewHeatmapPoints", methods=['POST'])
 def get_current_heatmap_points():
     return "TODO(mitch): this"
 
