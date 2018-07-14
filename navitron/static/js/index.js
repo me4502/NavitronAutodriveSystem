@@ -14,8 +14,6 @@ let MIDDLEMOUNT_BOTTOM = MIDDLEMOUNT_TOP - MIDDLEMOUNT_OVERLAY_HEIGHT * MIDDLEMO
 let MIDDLEMOUNT_ZONE_NUM = 55;
 let MIDDLEMOUNT_ZONE_LETTER = 'K';
 
-google.maps.event.addDomListener(window, 'load', init_map);
-
 var overlay;
 var map;
 function init_map() {
@@ -43,9 +41,8 @@ function init_map() {
 };
 
 // Set up
-window.addEventListener('load', function() {
-    autoBounce();
-    getKramers();
+google.maps.event.addDomListener(window, 'load', function() {
+    init_map();
 });
 
 
