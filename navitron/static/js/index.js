@@ -104,6 +104,3 @@ google.maps.event.addDomListener(window, 'load', function() {
     init_map();
     update_equipment();
 });
-
-
-
