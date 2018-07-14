@@ -22,11 +22,11 @@ var map;
 var equipment_markers = {};
 var heatmap_points = new google.maps.MVCArray();
 
-// Setup middlemount mine on google maps
+// Initialise Middlemount Mine gMap
 function init_map() {
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: 14,
-        // Default to the Middlemount mine site
+        // Default to the Middlemount site
         center: new google.maps.LatLng(ROUGH_MIDDLEMOUNT_LAT, ROUGH_MIDDLEMOUNT_LNG),
         mapTypeId: 'satellite'
     });
@@ -74,6 +74,7 @@ function get_icon(type) {
                 scaledSize: new google.maps.Size(50, 50),
                 anchor: new google.maps.Point(25, 25),
             };
+    }
 }
 
 // Update equipment
@@ -84,7 +85,9 @@ function update_equipment() {
             var [type, lat, lng, sensor] = res[equipment];
             var lat_lng = new google.maps.LatLng(lat, lng);
             if (!(equipment in equipment_markers)) {
-                equipment_markers[equipment] = new google.maps.Marker({map: map, icon: get_icon(type)});
+                equipment_markers[equipment] = new google.maps.Marker({map: map,
+                                                                       icon: get_icon(type),
+                                                                       title: type});
             }
             equipment_markers[equipment].setPosition(lat_lng);
             heatmap_points.push({location: lat_lng, weight: sensor});
@@ -97,6 +100,25 @@ function update_equipment() {
 // Toggle viewing heatmap
 function toggle_heatmap() {
     heatmap.setMap(heatmap.getMap() ? null : map);
+}
+
+// Toggle viewing all markers
+function toggle_all_markers() {
+    for (var equipment in equipment_markers) {
+        var marker = equipment_markers[equipment];
+        marker.setVisible(!marker.getVisible());
+    }
+}
+
+// Toggle viewing markers of the given type
+function toggle_markers(type) {
+    for (var equipment in equipment_markers) {
+        var marker = equipment_markers[equipment];
+        if (marker.getTitle() != type) {
+            continue;
+        }
+        marker.setVisible(!marker.getVisible());
+    }
 }
 
 // Set up
