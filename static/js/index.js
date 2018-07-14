@@ -85,9 +85,8 @@ function update_equipment() {
             var [type, lat, lng, sensor] = res[equipment];
             var lat_lng = new google.maps.LatLng(lat, lng);
             if (!(equipment in equipment_markers)) {
-                equipment_markers[equipment] = new google.maps.Marker({map: map,
-                                                                       icon: get_icon(type),
-                                                                       title: type});
+                var marker_options = {map: map, icon: get_icon(type), title: type}
+                equipment_markers[equipment] = new google.maps.Marker(marker_options);
             }
             equipment_markers[equipment].setPosition(lat_lng);
             heatmap_points.push({location: lat_lng, weight: sensor});
