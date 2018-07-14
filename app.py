@@ -7,6 +7,7 @@ from flask import Flask, render_template, jsonify
 NAVITRON_APP = Flask(__name__)
 
 # TODO(mitch): turn these test points into something legit
+delta_update = 1
 num_points = 100
 equipment_index = -1
 equipment = {
@@ -32,7 +33,7 @@ def index():
 @NAVITRON_APP.route("/getEquipmentUpdate", methods=['POST'])
 def get_equipment_update():
     global equipment_index
-    equipment_index += 1
+    equipment_index += delta_update
     return jsonify({k: v[equipment_index % num_points] for k, v in equipment.items()})
 
 
