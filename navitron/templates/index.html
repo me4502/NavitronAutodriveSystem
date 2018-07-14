@@ -3,11 +3,14 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
     <body>
         <div id="map"></div>
+        <div id="floating-panel">
+            <button onclick="toggle_heatmap()">Toggle Road Roughness Heatmap</button>
+        </div>
     </body>
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <!-- gMaps -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDNRddqDEAfNQ_Fa2KiIS4JzXeFCkHTMi0"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDNRddqDEAfNQ_Fa2KiIS4JzXeFCkHTMi0&libraries=visualization"></script>
     <script src="{{ url_for('static', filename='js/util.js') }}"></script>
     <script src="{{ url_for('static', filename='js/middlemount_overlay.js') }}"></script>
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>

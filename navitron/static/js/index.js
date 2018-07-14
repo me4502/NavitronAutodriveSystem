@@ -1,7 +1,7 @@
-let ROUGH_MIDDLEMOUNT_LAT = -23.032194;
-let ROUGH_MIDDLEMOUNT_LNG = 148.760222;
+let ROUGH_MIDDLEMOUNT_LAT = -23.025;
+let ROUGH_MIDDLEMOUNT_LNG = 148.74;
 
-let MIDDLEMOUNT_OVERLAY_SRC = '/static/images/mine_overlay.png';
+let MIDDLEMOUNT_OVERLAY_SRC = '/static/images/mine_overlay_hidpi.png';
 let MIDDLEMOUNT_OVERLAY_WIDTH = 14188;
 let MIDDLEMOUNT_OVERLAY_HEIGHT = 15058;
 let MIDDLEMOUNT_X_UNIT = 0.5;
@@ -14,12 +14,12 @@ let MIDDLEMOUNT_BOTTOM = MIDDLEMOUNT_TOP - MIDDLEMOUNT_OVERLAY_HEIGHT * MIDDLEMO
 let MIDDLEMOUNT_ZONE_NUM = 55;
 let MIDDLEMOUNT_ZONE_LETTER = 'K';
 
-let HEATMAP_RATE = 100;
-let EQUIPMENT_RATE = 100;
+let UPDATE_RATE = 100;
 
 var overlay;
+var heatmap;
 var map;
-var equipment;
+var equipment_markers = {};
 var heatmap_points = new google.maps.MVCArray();
 
 // Setup middlemount mine on google maps
@@ -30,6 +30,7 @@ function init_map() {
         center: new google.maps.LatLng(ROUGH_MIDDLEMOUNT_LAT, ROUGH_MIDDLEMOUNT_LNG),
         mapTypeId: 'satellite'
     });
+    map.setOptions({maxZoom: 18});
 
     var {latitude: left, longitude: top} = toLatLon(MIDDLEMOUNT_LEFT,
                                                     MIDDLEMOUNT_TOP,
@@ -45,33 +46,63 @@ function init_map() {
     );
 
     overlay = new MiddlemountOverlay(bounds, MIDDLEMOUNT_OVERLAY_SRC, map);
+
+    heatmap = new google.maps.visualization.HeatmapLayer({
+      data: heatmap_points
+    });
+    heatmap.setMap(map);
 };
 
-// Get new heatmap points
-function get_new_heatmap_points() {
+// Get the icon for the given type
+function get_icon(type) {
+    switch(type) {
+        case 'shovel':
+            return {
+                url: '/static/images/shovel.png',
+                scaledSize: new google.maps.Size(50, 50),
+                anchor: new google.maps.Point(25, 25),
+            };
+        case 'shovel':
+            return {
+                url: '/static/images/shovel.png',
+                scaledSize: new google.maps.Size(50, 50),
+                anchor: new google.maps.Point(25, 25),
+            };
+        default:
+            return {
+                url: '/static/images/truck.png',
+                scaledSize: new google.maps.Size(50, 50),
+                anchor: new google.maps.Point(25, 25),
+            };
+}
+
+// Update equipment
+function update_equipment() {
     // Send AJAX query
-    $.ajax({ url: "getNewHeatmapPoints", type: "POST" }).done(res => {
-        console.log('got response from getNewHeatmapPoints');
+    $.ajax({ url: "getEquipmentUpdate", type: "POST" }).done(res => {
+        for (var equipment in res) {
+            var [type, lat, lng, sensor] = res[equipment];
+            var lat_lng = new google.maps.LatLng(lat, lng);
+            if (!(equipment in equipment_markers)) {
+                equipment_markers[equipment] = new google.maps.Marker({map: map, icon: get_icon(type)});
+            }
+            equipment_markers[equipment].setPosition(lat_lng);
+            heatmap_points.push({location: lat_lng, weight: sensor});
+        }
     });
     // Delay and repeat function
-    setTimeout(get_new_heatmap_points, HEATMAP_RATE);
+    setTimeout(update_equipment, UPDATE_RATE);
 };
 
-// Get current equipment points
-function get_current_equipment_points() {
-    // Send AJAX query
-    $.ajax({ url: "getCurrentEquipmentPoints", type: "POST" }).done(res => {
-        console.log('got response from getCurrentEquipmentPoints');
-    });
-    // Delay and repeat function
-    setTimeout(get_current_equipment_points, EQUIPMENT_RATE);
-};
+// Toggle viewing heatmap
+function toggle_heatmap() {
+    heatmap.setMap(heatmap.getMap() ? null : map);
+}
 
 // Set up
 google.maps.event.addDomListener(window, 'load', function() {
     init_map();
-    get_new_heatmap_points();
-    get_current_equipment_points();
+    update_equipment();
 });
 
 
