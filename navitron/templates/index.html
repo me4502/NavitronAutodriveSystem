@@ -4,9 +4,7 @@
     <body>
         <div id="map"></div>
     </body>
-    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
     <!-- gMaps -->
-    <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDNRddqDEAfNQ_Fa2KiIS4JzXeFCkHTMi0&callback=init_map">
-    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDNRddqDEAfNQ_Fa2KiIS4JzXeFCkHTMi0"></script>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </html>
