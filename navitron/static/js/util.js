@@ -1,4 +1,4 @@
-'use strict'
+// Bidirectional UTM-WGS84 converter
 // Credit to Timothy Gu at https://github.com/TimothyGu/utm
 
 var K0 = 0.9996;
@@ -29,7 +29,7 @@ var R = 6378137;
 
 var ZONE_LETTERS = 'CDEFGHJKLMNPQRSTUVWXX';
 
-export function toLatLon(easting, northing, zoneNum, zoneLetter, northern, strict) {
+function toLatLon(easting, northing, zoneNum, zoneLetter, northern, strict) {
   strict = strict !== undefined ? strict : true;
 
   if (!zoneLetter && northern === undefined) {
@@ -110,7 +110,7 @@ export function toLatLon(easting, northing, zoneNum, zoneLetter, northern, stric
   };
 }
 
-export function fromLatLon(latitude, longitude, forceZoneNum) {
+function fromLatLon(latitude, longitude, forceZoneNum) {
   if (latitude > 84 || latitude < -80) {
     throw new RangeError('latitude out of range (must be between 80 deg S and 84 deg N)');
   }
