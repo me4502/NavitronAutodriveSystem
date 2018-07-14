@@ -102,19 +102,11 @@ function toggle_heatmap() {
     heatmap.setMap(heatmap.getMap() ? null : map);
 }
 
-// Toggle viewing all markers
-function toggle_all_markers() {
-    for (var equipment in equipment_markers) {
-        var marker = equipment_markers[equipment];
-        marker.setVisible(!marker.getVisible());
-    }
-}
-
-// Toggle viewing markers of the given type
+// Toggle viewing markers of the given type. If none specified, toggles all.
 function toggle_markers(type) {
     for (var equipment in equipment_markers) {
         var marker = equipment_markers[equipment];
-        if (marker.getTitle() != type) {
+        if (type != null && marker.getTitle() != type) {
             continue;
         }
         marker.setVisible(!marker.getVisible());
