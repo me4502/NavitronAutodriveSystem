@@ -14,10 +14,11 @@ let MIDDLEMOUNT_BOTTOM = MIDDLEMOUNT_TOP - MIDDLEMOUNT_OVERLAY_HEIGHT * MIDDLEMO
 let MIDDLEMOUNT_ZONE_NUM = 55;
 let MIDDLEMOUNT_ZONE_LETTER = 'K';
 
-let POLL_RATE = 100;
+let SLOW_NUM_STEPS = 200;
+let FAST_NUM_STEPS = 4;
+let POLL_RATE = 0;
 let UPDATE_RATE = 0;
-let NUM_STEPS = 100;
-let STEP_SIZE = 1.0 / NUM_STEPS;
+let NUM_STEPS = SLOW_NUM_STEPS;
 
 var can_poll = true;
 var can_update = false;
@@ -164,7 +165,7 @@ function update_positions() {
         var [type, lat, lng, next_lat, next_lng, sensor] = equipment[equipment_id];
         var from = new google.maps.LatLng(lat, lng);
         var to = new google.maps.LatLng(next_lat, next_lng);
-        var interpolated = google.maps.geometry.spherical.interpolate(from, to, STEP_SIZE * step);
+        var interpolated = google.maps.geometry.spherical.interpolate(from, to, (1.0 / NUM_STEPS) * step);
         marker.setPosition(interpolated);
     }
     step += 1;
@@ -180,6 +181,14 @@ function update_positions() {
 // Toggle viewing heatmap
 function toggle_heatmap() {
     heatmap.setMap(heatmap.getMap() ? null : map);
+}
+
+// Toggle updating and polling speed
+function toggle_speed() {
+    step = 0;
+    can_poll = true;
+    can_update = false;
+    NUM_STEPS = NUM_STEPS == SLOW_NUM_STEPS ? FAST_NUM_STEPS : SLOW_NUM_STEPS;
 }
 
 // Toggle viewing markers of the given type. If none specified, toggles all.
