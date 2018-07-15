@@ -14,7 +14,7 @@ let MIDDLEMOUNT_BOTTOM = MIDDLEMOUNT_TOP - MIDDLEMOUNT_OVERLAY_HEIGHT * MIDDLEMO
 let MIDDLEMOUNT_ZONE_NUM = 55;
 let MIDDLEMOUNT_ZONE_LETTER = 'K';
 
-let UPDATE_RATE = 100;
+let UPDATE_RATE = 500;
 
 var overlay;
 var heatmap;
@@ -56,21 +56,57 @@ function init_map() {
 // Get the icon for the given type
 function get_icon(type) {
     switch(type) {
-        case 'shovel':
+        case 'Truck':
             return {
-                url: '/static/images/shovel.png',
+                url: '/static/images/dump_truck.png',
                 scaledSize: new google.maps.Size(50, 50),
                 anchor: new google.maps.Point(25, 25),
             };
-        case 'shovel':
+        case 'WaterTruck':
+            return {
+                url: '/static/images/water_truck.png',
+                scaledSize: new google.maps.Size(50, 30),
+                anchor: new google.maps.Point(25, 25),
+            };
+        case 'FuelTruck':
+            return {
+                url: '/static/images/fuel_truck.png',
+                scaledSize: new google.maps.Size(50, 40),
+                anchor: new google.maps.Point(25, 25),
+            };
+        case 'Shovel':
             return {
                 url: '/static/images/shovel.png',
+                scaledSize: new google.maps.Size(50, 40),
+                anchor: new google.maps.Point(25, 25),
+            };
+        case 'Drill':
+            return {
+                url: '/static/images/drill.png',
                 scaledSize: new google.maps.Size(50, 50),
+                anchor: new google.maps.Point(25, 25),
+            };
+        case 'Dozer':
+            return {
+                url: '/static/images/dozer.png',
+                scaledSize: new google.maps.Size(50, 30),
+                anchor: new google.maps.Point(25, 25),
+            };
+        case 'Grader':
+            return {
+                url: '/static/images/grader.png',
+                scaledSize: new google.maps.Size(50, 25),
+                anchor: new google.maps.Point(25, 25),
+            };
+        case 'Loader':
+            return {
+                url: '/static/images/loader.png',
+                scaledSize: new google.maps.Size(50, 40),
                 anchor: new google.maps.Point(25, 25),
             };
         default:
             return {
-                url: '/static/images/truck.png',
+                url: '/static/images/dump_truck.png',
                 scaledSize: new google.maps.Size(50, 50),
                 anchor: new google.maps.Point(25, 25),
             };
@@ -83,13 +119,17 @@ function update_equipment() {
     $.ajax({ url: "getEquipmentUpdate", type: "POST" }).done(res => {
         for (var equipment in res) {
             var [type, lat, lng, sensor] = res[equipment];
+            lat /= 3600000
+            lng /= 3600000
             var lat_lng = new google.maps.LatLng(lat, lng);
             if (!(equipment in equipment_markers)) {
                 var marker_options = {map: map, icon: get_icon(type), title: type}
                 equipment_markers[equipment] = new google.maps.Marker(marker_options);
             }
             equipment_markers[equipment].setPosition(lat_lng);
-            heatmap_points.push({location: lat_lng, weight: sensor});
+            if (sensor != null) {
+                heatmap_points.push({location: lat_lng, weight: sensor});
+            }
         }
     });
     // Delay and repeat function
