@@ -74,19 +74,19 @@ function get_icon(type) {
             return {
                 url: '/static/images/water_truck.png',
                 scaledSize: new google.maps.Size(50, 30),
-                anchor: new google.maps.Point(25, 25),
+                anchor: new google.maps.Point(25, 15),
             };
         case 'FuelTruck':
             return {
                 url: '/static/images/fuel_truck.png',
                 scaledSize: new google.maps.Size(50, 40),
-                anchor: new google.maps.Point(25, 25),
+                anchor: new google.maps.Point(25, 20),
             };
         case 'Shovel':
             return {
                 url: '/static/images/shovel.png',
                 scaledSize: new google.maps.Size(50, 40),
-                anchor: new google.maps.Point(25, 25),
+                anchor: new google.maps.Point(25, 20),
             };
         case 'Drill':
             return {
@@ -98,19 +98,19 @@ function get_icon(type) {
             return {
                 url: '/static/images/dozer.png',
                 scaledSize: new google.maps.Size(50, 30),
-                anchor: new google.maps.Point(25, 25),
+                anchor: new google.maps.Point(25, 15),
             };
         case 'Grader':
             return {
                 url: '/static/images/grader.png',
                 scaledSize: new google.maps.Size(50, 25),
-                anchor: new google.maps.Point(25, 25),
+                anchor: new google.maps.Point(25, 12.5),
             };
         case 'Loader':
             return {
                 url: '/static/images/loader.png',
                 scaledSize: new google.maps.Size(50, 40),
-                anchor: new google.maps.Point(25, 25),
+                anchor: new google.maps.Point(25, 20),
             };
         default:
             return {
