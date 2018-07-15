@@ -14,11 +14,13 @@ let MIDDLEMOUNT_BOTTOM = MIDDLEMOUNT_TOP - MIDDLEMOUNT_OVERLAY_HEIGHT * MIDDLEMO
 let MIDDLEMOUNT_ZONE_NUM = 55;
 let MIDDLEMOUNT_ZONE_LETTER = 'K';
 
-let UPDATE_RATE = 500;
+let POLL_RATE = 10;
+let UPDATE_RATE = 10;
 
 var overlay;
 var heatmap;
 var map;
+var equipment = {};
 var equipment_markers = {};
 var heatmap_points = new google.maps.MVCArray();
 
@@ -50,6 +52,7 @@ function init_map() {
     heatmap = new google.maps.visualization.HeatmapLayer({
       data: heatmap_points
     });
+    heatmap.setOptions({radius: 30});
     heatmap.setMap(map);
 };
 
@@ -117,16 +120,19 @@ function get_icon(type) {
 function update_equipment() {
     // Send AJAX query
     $.ajax({ url: "getEquipmentUpdate", type: "POST" }).done(res => {
-        for (var equipment in res) {
-            var [type, lat, lng, sensor] = res[equipment];
+        for (var equipment_id in res) {
+            var [type, lat, lng, next_lat, next_lng, sensor] = res[equipment_id];
             lat /= 3600000
             lng /= 3600000
             var lat_lng = new google.maps.LatLng(lat, lng);
-            if (!(equipment in equipment_markers)) {
+            if (!(equipment_id in equipment_markers)) {
                 var marker_options = {map: map, icon: get_icon(type), title: type}
-                equipment_markers[equipment] = new google.maps.Marker(marker_options);
+                equipment_markers[equipment_id] = new google.maps.Marker(marker_options);
             }
-            equipment_markers[equipment].setPosition(lat_lng);
+            if (!(equipment_id in equipment)) {
+                equipment[equipment_id] = [type, lat, lng, next_lat, next_lng, sensor];
+            }
+            equipment_markers[equipment_id].setPosition(lat_lng);
             if (sensor != null) {
                 heatmap_points.push({location: lat_lng, weight: sensor});
             }
@@ -156,4 +162,5 @@ function toggle_markers(type) {
 google.maps.event.addDomListener(window, 'load', function() {
     init_map();
     update_equipment();
+    update_positions();
 });
