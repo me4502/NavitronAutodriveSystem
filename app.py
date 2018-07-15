@@ -1,28 +1,24 @@
 import time
+import csv
 import random
+from dateutil import parser
 from waitress import serve
 from flask import Flask, render_template, jsonify
 
 
 NAVITRON_APP = Flask(__name__)
 
-# TODO(mitch): turn these test points into something legit
-delta_update = 1
-num_points = 100
-equipment_index = -1
-equipment = {
-    0: [('truck',
-         -23.025 - i * 0.0002,
-         148.74 + i * 0.0002,
-         100 + 1000 * (random.random() - 0.1))
-        for i in range(num_points)],
-    1: [('shovel',
-         -23.025 + 0.001 * (random.random() - 0.1),
-         148.74 + 0.1 * (random.random() - 0.5))] * num_points,
-    2: [('shovel',
-         -23.025 + 0.001 * (random.random() - 0.1),
-         148.74 + 0.1 * (random.random() - 0.5))] * num_points
-}
+DELTA_UPDATE = 1
+equipment_index = 0
+equipment = {}
+with open('data/culled.csv') as equipment_file:
+    equipment_reader = csv.reader(equipment_file)
+    for row in equipment_reader:
+        _, lat, lng, type_, id_, sensor = row
+        sensor = sensor if sensor != 'NULL' else None
+        if (id_ not in equipment):
+            equipment[id_] = []
+        equipment[id_].append((type_, lat, lng, sensor))
 
 
 @NAVITRON_APP.route("/")
@@ -33,8 +29,11 @@ def index():
 @NAVITRON_APP.route("/getEquipmentUpdate", methods=['POST'])
 def get_equipment_update():
     global equipment_index
-    equipment_index += delta_update
-    return jsonify({k: v[equipment_index % num_points] for k, v in equipment.items()})
+    equipment_update = {k: v[equipment_index % len(v)] for k, v in equipment.items()}
+    equipment_index += DELTA_UPDATE
+    print(equipment_update)
+    print()
+    return jsonify(equipment_update)
 
 
 if __name__ == "__main__":
