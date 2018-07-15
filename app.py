@@ -12,7 +12,7 @@ with open('data/culled.csv') as equipment_file:
     equipment_reader = csv.reader(equipment_file)
     for row in equipment_reader:
         _, lat, lng, type_, id_, sensor = row
-        sensor = float(sensor) / 100.0 if sensor != 'NULL' else None
+        sensor = float(sensor) if sensor != 'NULL' else None
         if (id_ not in equipment):
             equipment[id_] = []
         # update previous gps coord's next coord with current coord (lol nice explanation)
