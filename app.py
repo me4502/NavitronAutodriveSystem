@@ -1,7 +1,4 @@
-import time
 import csv
-import random
-from dateutil import parser
 from waitress import serve
 from flask import Flask, render_template, jsonify
 
@@ -15,10 +12,14 @@ with open('data/culled.csv') as equipment_file:
     equipment_reader = csv.reader(equipment_file)
     for row in equipment_reader:
         _, lat, lng, type_, id_, sensor = row
-        sensor = sensor if sensor != 'NULL' else None
+        sensor = float(sensor) / 10.0 if sensor != 'NULL' else None
         if (id_ not in equipment):
             equipment[id_] = []
-        equipment[id_].append((type_, lat, lng, sensor))
+        # update previous gps coord's next coord with current coord (lol nice explanation)
+        if len(equipment[id_]) > 0:
+            equipment[id_][-1][3] = lat
+            equipment[id_][-1][4] = lng
+        equipment[id_].append([type_, lat, lng, lat, lng, sensor])
 
 
 @NAVITRON_APP.route("/")
@@ -31,8 +32,6 @@ def get_equipment_update():
     global equipment_index
     equipment_update = {k: v[equipment_index % len(v)] for k, v in equipment.items()}
     equipment_index += DELTA_UPDATE
-    print(equipment_update)
-    print()
     return jsonify(equipment_update)
 
 
